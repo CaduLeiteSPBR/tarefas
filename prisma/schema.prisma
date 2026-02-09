@@ -1,0 +1,98 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Family {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  users     User[]
+  tasks     Task[]
+}
+
+model User {
+  id        String      @id @default(cuid())
+  name      String
+  email     String      @unique
+  role      String
+  createdAt DateTime    @default(now())
+  familyId  String
+  family    Family      @relation(fields: [familyId], references: [id])
+  child     ChildProfile?
+  parent    ParentProfile?
+  completions TaskCompletion[]
+}
+
+model ParentProfile {
+  id        String @id @default(cuid())
+  userId    String @unique
+  user      User   @relation(fields: [userId], references: [id])
+}
+
+model ChildProfile {
+  id             String    @id @default(cuid())
+  userId         String    @unique
+  user           User      @relation(fields: [userId], references: [id])
+  moneyMode      String @default("EARNINGS")
+  startingAmount Int       @default(0)
+  overrides      ChildTaskOverride[]
+}
+
+model Task {
+  id          String   @id @default(cuid())
+  familyId    String
+  family      Family   @relation(fields: [familyId], references: [id])
+  title       String
+  description String?
+  baseValue   Int
+  createdAt   DateTime @default(now())
+  overrides   ChildTaskOverride[]
+  completions TaskCompletion[]
+}
+
+model ChildTaskOverride {
+  id        String @id @default(cuid())
+  childId   String
+  taskId    String
+  disabled  Boolean @default(false)
+  value     Int?
+  child     ChildProfile @relation(fields: [childId], references: [id])
+  task      Task        @relation(fields: [taskId], references: [id])
+
+  @@unique([childId, taskId])
+}
+
+model TaskCompletion {
+  id        String   @id @default(cuid())
+  childId   String
+  taskId    String
+  date      DateTime
+  value     Int
+  createdAt DateTime @default(now())
+
+  child     User @relation(fields: [childId], references: [id])
+  task      Task @relation(fields: [taskId], references: [id])
+
+  @@index([childId, date])
+}
+
+model MonthlySnapshot {
+  id           String   @id @default(cuid())
+  childId      String
+  month        Int
+  year         Int
+  totalEarned  Int
+  totalSpent   Int
+  closingValue Int
+  createdAt    DateTime @default(now())
+
+  child        User @relation(fields: [childId], references: [id])
+
+  @@unique([childId, month, year])
+}

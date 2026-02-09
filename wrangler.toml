@@ -1,0 +1,8 @@
+name = "tarefas"
+compatibility_date = "2024-01-01"
+pages_build_output_dir = ".next"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "tarefas-db"
+database_id = "4d0f1efb-a742-42a8-bbbe-c2ac87c60620"

@@ -30,6 +30,24 @@ npx prisma generate
 npm run dev
 ```
 
+## Publicação (GitHub + Cloudflare)
+
+1. Faça o commit e envie para o GitHub:
+
+```bash
+git add .
+git commit -m "Atualiza base do projeto"
+git push origin main
+```
+
+2. No Cloudflare Pages, crie um novo projeto apontando para o repositório.
+3. Use as configurações abaixo:
+   - **Build command:** `npm run build`
+   - **Build output directory:** `.next`
+   - **Environment variables:** copie as mesmas variáveis do `.env` (por exemplo, `DATABASE_URL` e `NEXTAUTH_SECRET`).
+
+> Dica: ao publicar, ajuste o `NEXTAUTH_URL` para o domínio final e configure o banco de dados gerenciado (ex.: Neon, Supabase ou RDS).
+
 ## Funcionalidades planejadas
 
 - Convite por e-mail para filhos entrarem na família.

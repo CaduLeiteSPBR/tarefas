@@ -1,20 +1,11 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
-}
-
-enum UserRole {
-  PARENT
-  CHILD
-}
-
-enum MoneyMode {
-  STARTING_BALANCE
-  EARNINGS
 }
 
 model Family {
@@ -29,7 +20,7 @@ model User {
   id        String      @id @default(cuid())
   name      String
   email     String      @unique
-  role      UserRole
+  role      String
   createdAt DateTime    @default(now())
   familyId  String
   family    Family      @relation(fields: [familyId], references: [id])
@@ -48,7 +39,7 @@ model ChildProfile {
   id             String    @id @default(cuid())
   userId         String    @unique
   user           User      @relation(fields: [userId], references: [id])
-  moneyMode      MoneyMode @default(EARNINGS)
+  moneyMode      String @default("EARNINGS")
   startingAmount Int       @default(0)
   overrides      ChildTaskOverride[]
 }
